@@ -1,0 +1,13 @@
+
+spring:
+  application:
+    name: query
+  profiles:
+    active: local
+    include: actuator, datasource, kafka, logging, openapi, secret
+  cache:
+    type: redis
+
+server:
+  port: 10082
+  shutdown: graceful

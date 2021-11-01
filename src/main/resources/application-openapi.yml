@@ -1,0 +1,13 @@
+
+spring:
+  config:
+    activate:
+      on-profile: "!real"
+
+springdoc:
+  packages-to-scan: com.closememo.query.controller
+  paths-to-match: /query/**
+  swagger-ui:
+    path: /query/swagger-ui.html
+  api-docs:
+    path: /query/api-docs
