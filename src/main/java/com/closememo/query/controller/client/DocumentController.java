@@ -1,10 +1,10 @@
 package com.closememo.query.controller.client;
 
+import com.closememo.query.config.openapi.apitags.DocumentApiTag;
+import com.closememo.query.config.security.authentication.account.AccountId;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import com.closememo.query.controller.client.facade.DocumentFacade;
-import com.closememo.query.config.openapi.apitags.DocumentApiTag;
-import com.closememo.query.config.security.authentication.account.AccountId;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @DocumentApiTag
 @ClientQueryInterface
@@ -36,5 +37,12 @@ public class DocumentController {
       @AuthenticationPrincipal AccountId accountId) {
     return documentFacade.getDocument(documentId,
         Optional.ofNullable(accountId).map(AccountId::getId).orElse(null));
+  }
+
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping("/documents-by-tag")
+  public List<SimpleDocumentDTO> getDocumentsByTag(@RequestParam String tag,
+      @AuthenticationPrincipal AccountId accountId) {
+    return documentFacade.getDocumentsByTag(accountId.getId(), tag);
   }
 }

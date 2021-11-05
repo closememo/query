@@ -11,7 +11,7 @@ spring:
 
 logging:
   level:
-    com.closememo.command: DEBUG
+    com.closememo.query: DEBUG
     com.zaxxer.hikari: TRACE
     org.hibernate.metamodel.model.convert.internal: TRACE
     org.hibernate.resource.jdbc.internal: TRACE
