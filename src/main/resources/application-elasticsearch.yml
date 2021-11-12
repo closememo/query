@@ -7,7 +7,7 @@ spring:
 elasticsearch:
   configs:
     default:
-      host-name: dev.es.bitgadak.com
+      host-name: dev.es.closememo.com
       port: 9200
       connection-timeout: 5000
       socket-timeout: 60000
@@ -22,7 +22,7 @@ spring:
 elasticsearch:
   configs:
     default:
-      host-name: es.bitgadak.com
+      host-name: es.closememo.com
       port: 9200
       connection-timeout: 5000
       socket-timeout: 60000
