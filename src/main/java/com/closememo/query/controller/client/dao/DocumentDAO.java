@@ -23,7 +23,8 @@ public class DocumentDAO {
   public List<SimpleDocumentDTO> getDocuments(String ownerId) {
     TypedQuery<SimpleDocumentDTO> query = em
         .createQuery(
-            "SELECT d FROM SimpleDocumentDTO d WHERE d.ownerId = :ownerId",
+            "SELECT d FROM SimpleDocumentDTO d"
+                + " WHERE d.ownerId = :ownerId ORDER BY d.createdAt DESC",
             SimpleDocumentDTO.class);
     query.setParameter("ownerId", ownerId);
 
@@ -34,7 +35,7 @@ public class DocumentDAO {
     TypedQuery<SimpleDocumentDTO> query = em
         .createQuery(
             "SELECT d FROM SimpleDocumentDTO d"
-                + " WHERE d.ownerId = :ownerId AND d.id IN :documentIds",
+                + " WHERE d.ownerId = :ownerId AND d.id IN :documentIds ORDER BY d.createdAt DESC",
             SimpleDocumentDTO.class);
     query.setParameter("ownerId", ownerId);
     query.setParameter("documentIds", documentIds);
