@@ -1,6 +1,7 @@
 package com.closememo.query.controller.client.dao;
 
 import com.closememo.query.controller.client.dto.DifferenceDTO;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
@@ -14,13 +15,14 @@ public class DifferenceDAO {
     this.em = em;
   }
 
-  public DifferenceDTO getDifference(String differenceId) {
+  public List<DifferenceDTO> getDifferencesByDocumentId(String documentId) {
     TypedQuery<DifferenceDTO> query = em
         .createQuery(
-            "SELECT d FROM DifferenceDTO d WHERE d.id = :differenceId",
+            "SELECT d FROM DifferenceDTO d"
+                + " WHERE d.documentId = :documentId ORDER BY d.createdAt DESC",
             DifferenceDTO.class);
-    query.setParameter("differenceId", differenceId);
+    query.setParameter("documentId", documentId);
 
-    return query.getSingleResult();
+    return query.getResultList();
   }
 }

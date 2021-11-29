@@ -2,6 +2,7 @@ package com.closememo.query.controller.client.facade;
 
 import com.closememo.query.controller.client.dao.DifferenceDAO;
 import com.closememo.query.controller.client.dto.DifferenceDTO;
+import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +14,7 @@ public class DifferenceFacade {
     this.differenceDAO = differenceDAO;
   }
 
-  public DifferenceDTO getDifference(String differenceId) {
-    return differenceDAO.getDifference(differenceId);
+  public List<DifferenceDTO> getDifferencesByDocumentId(String documentId) {
+    return differenceDAO.getDifferencesByDocumentId(documentId);
   }
 }
