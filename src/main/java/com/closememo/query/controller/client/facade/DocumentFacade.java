@@ -3,6 +3,7 @@ package com.closememo.query.controller.client.facade;
 import com.closememo.query.controller.client.dao.DocumentDAO;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
+import com.closememo.query.controller.shared.dto.OffsetPage;
 import com.closememo.query.infra.elasticsearch.ElasticsearchClient;
 import com.closememo.query.infra.elasticsearch.request.SearchPostByTagRequest;
 import com.closememo.query.infra.exception.AccessDeniedException;
@@ -22,8 +23,19 @@ public class DocumentFacade {
     this.elasticsearchClient = elasticsearchClient;
   }
 
+  // TODO: 제거할 것.
   public List<SimpleDocumentDTO> getDocuments(String ownerId) {
     return documentDAO.getDocuments(ownerId);
+  }
+
+  public OffsetPage<SimpleDocumentDTO> getDocuments(String ownerId, int page, int limit) {
+    int offset = (page - 1) * limit;
+    List<SimpleDocumentDTO> documents = documentDAO.getDocuments(ownerId, offset, limit + 1);
+
+    boolean hasNext = documents.size() > limit;
+    List<SimpleDocumentDTO> truncatedDocuments = hasNext ? documents.subList(0, limit) : documents;
+
+    return new OffsetPage<>(truncatedDocuments, page, limit, hasNext);
   }
 
   public DocumentDTO getDocument(String documentId, String ownerId) {

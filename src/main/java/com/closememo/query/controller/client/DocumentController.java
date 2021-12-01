@@ -5,6 +5,7 @@ import com.closememo.query.config.security.authentication.account.AccountId;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import com.closememo.query.controller.client.facade.DocumentFacade;
+import com.closememo.query.controller.shared.dto.OffsetPage;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +25,21 @@ public class DocumentController {
     this.documentFacade = documentFacade;
   }
 
+  // TODO: 제거할 것.
   @PreAuthorize("hasRole('USER')")
   @GetMapping("/documents")
   public List<SimpleDocumentDTO> getDocuments(@AuthenticationPrincipal AccountId accountId) {
     return documentFacade.getDocuments(accountId.getId());
+  }
+
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping("/temp/documents")
+  public OffsetPage<SimpleDocumentDTO> getDocuments(
+      @RequestParam(defaultValue = "1") Integer page,
+      @RequestParam(defaultValue = "20") Integer limit,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    return documentFacade.getDocuments(accountId.getId(), page, limit);
   }
 
   @Operation(summary = "get document by document id")
