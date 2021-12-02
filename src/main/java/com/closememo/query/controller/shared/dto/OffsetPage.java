@@ -9,17 +9,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class OffsetPage<T> {
 
-  private static final OffsetPage<?> EMPTY = new OffsetPage<>(List.of(), null, null, false);
+  private static final OffsetPage<?> EMPTY = new OffsetPage<>(List.of(), 0L, 0, 0, false);
 
   private List<T> data;
-  private Integer currentPage;
-  private Integer limit;
+  private long total;
+  private int currentPage;
+  private int limit;
   private boolean hasNext;
 
-  public OffsetPage(List<T> data, Integer currentPage, Integer limit, boolean hasNext) {
+  public OffsetPage(List<T> data, long total, int currentPage, int limit, boolean hasNext) {
     this.data = data;
+    this.total = total;
     this.currentPage = currentPage;
     this.limit = limit;
     this.hasNext = hasNext;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> OffsetPage<T> empty() {
+    return (OffsetPage<T>) EMPTY;
   }
 }

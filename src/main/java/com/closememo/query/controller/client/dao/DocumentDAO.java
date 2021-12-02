@@ -20,6 +20,16 @@ public class DocumentDAO {
     this.em = em;
   }
 
+  public long count(String ownerId) {
+    TypedQuery<Long> query = em
+        .createQuery(
+            "SELECT COUNT(d) FROM SimpleDocumentDTO d WHERE d.ownerId = :ownerId",
+            Long.class);
+    query.setParameter("ownerId", ownerId);
+
+    return query.getSingleResult();
+  }
+
   // TODO: 제거할 것.
   public List<SimpleDocumentDTO> getDocuments(String ownerId) {
     TypedQuery<SimpleDocumentDTO> query = em

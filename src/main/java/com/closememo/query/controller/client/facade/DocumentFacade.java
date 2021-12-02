@@ -29,13 +29,19 @@ public class DocumentFacade {
   }
 
   public OffsetPage<SimpleDocumentDTO> getDocuments(String ownerId, int page, int limit) {
+
+    long total = documentDAO.count(ownerId);
+    if (total == 0L) {
+      return OffsetPage.empty();
+    }
+
     int offset = (page - 1) * limit;
     List<SimpleDocumentDTO> documents = documentDAO.getDocuments(ownerId, offset, limit + 1);
 
     boolean hasNext = documents.size() > limit;
     List<SimpleDocumentDTO> truncatedDocuments = hasNext ? documents.subList(0, limit) : documents;
 
-    return new OffsetPage<>(truncatedDocuments, page, limit, hasNext);
+    return new OffsetPage<>(truncatedDocuments, total, page, limit, hasNext);
   }
 
   public DocumentDTO getDocument(String documentId, String ownerId) {
