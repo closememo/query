@@ -25,16 +25,20 @@ public class DocumentController {
     this.documentFacade = documentFacade;
   }
 
-  // TODO: 제거할 것.
   @PreAuthorize("hasRole('USER')")
   @GetMapping("/documents")
-  public List<SimpleDocumentDTO> getDocuments(@AuthenticationPrincipal AccountId accountId) {
-    return documentFacade.getDocuments(accountId.getId());
+  public OffsetPage<SimpleDocumentDTO> getDocuments(
+      @RequestParam(defaultValue = "1") Integer page,
+      @RequestParam(defaultValue = "20") Integer limit,
+      @AuthenticationPrincipal AccountId accountId) {
+
+    return documentFacade.getDocuments(accountId.getId(), page, limit);
   }
 
+  // TODO: 제거할 것.
   @PreAuthorize("hasRole('USER')")
   @GetMapping("/temp/documents")
-  public OffsetPage<SimpleDocumentDTO> getDocuments(
+  public OffsetPage<SimpleDocumentDTO> getTempDocuments(
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "20") Integer limit,
       @AuthenticationPrincipal AccountId accountId) {

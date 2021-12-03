@@ -30,18 +30,6 @@ public class DocumentDAO {
     return query.getSingleResult();
   }
 
-  // TODO: 제거할 것.
-  public List<SimpleDocumentDTO> getDocuments(String ownerId) {
-    TypedQuery<SimpleDocumentDTO> query = em
-        .createQuery(
-            "SELECT d FROM SimpleDocumentDTO d"
-                + " WHERE d.ownerId = :ownerId ORDER BY d.createdAt DESC",
-            SimpleDocumentDTO.class);
-    query.setParameter("ownerId", ownerId);
-
-    return query.getResultList();
-  }
-
   public List<SimpleDocumentDTO> getDocuments(String ownerId, int offset, int limit) {
     TypedQuery<SimpleDocumentDTO> query = em
         .createQuery(

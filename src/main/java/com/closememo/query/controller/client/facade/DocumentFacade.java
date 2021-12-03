@@ -23,11 +23,6 @@ public class DocumentFacade {
     this.elasticsearchClient = elasticsearchClient;
   }
 
-  // TODO: 제거할 것.
-  public List<SimpleDocumentDTO> getDocuments(String ownerId) {
-    return documentDAO.getDocuments(ownerId);
-  }
-
   public OffsetPage<SimpleDocumentDTO> getDocuments(String ownerId, int page, int limit) {
 
     long total = documentDAO.count(ownerId);
