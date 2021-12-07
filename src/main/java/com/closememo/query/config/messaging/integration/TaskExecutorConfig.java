@@ -1,4 +1,4 @@
-package com.closememo.query.config.messaging.integraion;
+package com.closememo.query.config.messaging.integration;
 
 import com.zaxxer.hikari.HikariConfig;
 import java.util.concurrent.ThreadPoolExecutor;

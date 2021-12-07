@@ -1,4 +1,4 @@
-package com.closememo.query.config.messaging.integraion;
+package com.closememo.query.config.messaging.integration;
 
 import com.closememo.query.config.messaging.kafka.KafkaMessageConverter;
 import com.closememo.query.infra.messaging.DomainEvent;
