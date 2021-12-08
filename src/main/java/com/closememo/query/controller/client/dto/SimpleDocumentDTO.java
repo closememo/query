@@ -16,7 +16,7 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT d.id, d.owner_id, d.title, d.preview, d.tags, d.created_at FROM documents d")
+@Subselect("SELECT d.id, d.owner_id, d.title, d.preview, d.tags, d.auto_tags, d.created_at FROM documents d")
 @Synchronize({"documents"})
 public class SimpleDocumentDTO implements Serializable {
 
@@ -28,5 +28,7 @@ public class SimpleDocumentDTO implements Serializable {
   private String preview;
   @Convert(converter = StringListConverter.class)
   private List<String> tags;
+  @Convert(converter = StringListConverter.class)
+  private List<String> autoTags;
   private ZonedDateTime createdAt;
 }

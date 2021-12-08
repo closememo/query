@@ -33,6 +33,9 @@ public class DocumentReadModel {
   @Column(columnDefinition = "JSON")
   @Convert(converter = StringListConverter.class)
   private List<String> tags;
+  @Column(columnDefinition = "JSON")
+  @Convert(converter = StringListConverter.class)
+  private List<String> autoTags;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
   private ZonedDateTime updatedAt;
@@ -42,12 +45,15 @@ public class DocumentReadModel {
 
   @Builder(toBuilder = true)
   public DocumentReadModel(String id, String ownerId, String title, String content,
-      List<String> tags, ZonedDateTime createdAt, ZonedDateTime updatedAt, String preview) {
+      List<String> tags, List<String> autoTags, ZonedDateTime createdAt, ZonedDateTime updatedAt,
+      String preview) {
+
     this.id = id;
     this.ownerId = ownerId;
     this.title = title;
     this.content = content;
     this.tags = tags;
+    this.autoTags = autoTags;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.preview = preview;
