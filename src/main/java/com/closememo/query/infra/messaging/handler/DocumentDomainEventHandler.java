@@ -8,6 +8,7 @@ import com.closememo.query.infra.messaging.payload.document.DocumentUpdatedEvent
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModelRepository;
 import com.closememo.query.infra.exception.ResourceNotFoundException;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -33,7 +34,8 @@ public class DocumentDomainEventHandler {
         .title(payload.getTitle())
         .content(payload.getContent())
         .tags(payload.getTags())
-        .createdAt(payload.getCreatedAt());
+        .createdAt(payload.getCreatedAt())
+        .option(payload.getOption());
     setAdditionalProperties(builder, payload.getContent());
 
     repository.save(builder.build());
@@ -50,7 +52,13 @@ public class DocumentDomainEventHandler {
         .title(payload.getTitle())
         .content(payload.getContent())
         .tags(payload.getTags())
-        .updatedAt(payload.getUpdatedAt());
+        .updatedAt(payload.getUpdatedAt())
+        .option(payload.getOption());
+
+    if (!payload.getOption().isHasAutoTag()) {
+      builder.autoTags(Collections.emptyList());
+    }
+
     setAdditionalProperties(builder, payload.getContent());
 
     repository.save(builder.build());
@@ -66,6 +74,10 @@ public class DocumentDomainEventHandler {
   public void handle(AutoTagsUpdatedEvent payload) {
     DocumentReadModel document = repository.findById(payload.getAggregateId())
         .orElseThrow(ResourceNotFoundException::new);
+
+    if (!document.getOption().isHasAutoTag()) {
+      return;
+    }
 
     DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
         .autoTags(payload.getAutoTags());

@@ -5,6 +5,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -39,6 +41,8 @@ public class DocumentReadModel {
   @Column(nullable = false)
   private ZonedDateTime createdAt;
   private ZonedDateTime updatedAt;
+  @Embedded
+  private DocumentOption option;
 
   // ReadOnly
   private String preview;
@@ -46,7 +50,7 @@ public class DocumentReadModel {
   @Builder(toBuilder = true)
   public DocumentReadModel(String id, String ownerId, String title, String content,
       List<String> tags, List<String> autoTags, ZonedDateTime createdAt, ZonedDateTime updatedAt,
-      String preview) {
+      String preview, DocumentOption option) {
 
     this.id = id;
     this.ownerId = ownerId;
@@ -57,5 +61,14 @@ public class DocumentReadModel {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.preview = preview;
+    this.option = option;
+  }
+
+  @Embeddable
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class DocumentOption {
+
+    private boolean hasAutoTag;
   }
 }

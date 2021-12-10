@@ -2,6 +2,7 @@ package com.closememo.query.infra.messaging.payload.document;
 
 import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.messaging.DomainEvent;
+import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel.DocumentOption;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -17,4 +18,5 @@ public class DocumentCreatedEvent extends DomainEvent {
   private String content;
   private List<String> tags;
   private ZonedDateTime createdAt;
+  private DocumentOption option;
 }
