@@ -28,7 +28,7 @@ public class DocumentReadModel {
   private String id;
   @Column(nullable = false, columnDefinition = "VARCHAR(24)")
   private String ownerId;
-  @Column(nullable = false, columnDefinition = "VARCHAR(24)")
+  @Column(columnDefinition = "VARCHAR(24)") // TODO: 이후 nullable = false 처리
   private String categoryId;
   @Column(columnDefinition = "VARCHAR(150)")
   private String title;
