@@ -35,17 +35,6 @@ public class DocumentController {
     return documentFacade.getDocuments(accountId.getId(), page, limit);
   }
 
-  // TODO: 제거할 것.
-  @PreAuthorize("hasRole('USER')")
-  @GetMapping("/temp/documents")
-  public OffsetPage<SimpleDocumentDTO> getTempDocuments(
-      @RequestParam(defaultValue = "1") Integer page,
-      @RequestParam(defaultValue = "20") Integer limit,
-      @AuthenticationPrincipal AccountId accountId) {
-
-    return documentFacade.getDocuments(accountId.getId(), page, limit);
-  }
-
   @Operation(summary = "get document by document id")
   @PreAuthorize("hasRole('USER')")
   @GetMapping("/documents/{documentId}")
