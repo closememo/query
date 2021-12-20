@@ -14,4 +14,7 @@ public class CategoryCreatedEvent extends DomainEvent {
   private Identifier ownerId;
   private String name;
   private ZonedDateTime createdAt;
+  private Boolean isRoot;
+  private Identifier parentId;
+  private Integer depth;
 }

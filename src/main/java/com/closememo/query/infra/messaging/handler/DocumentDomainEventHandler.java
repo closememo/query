@@ -31,6 +31,7 @@ public class DocumentDomainEventHandler {
     DocumentReadModel.DocumentReadModelBuilder builder = DocumentReadModel.builder()
         .id(payload.getAggregateId())
         .ownerId(Identifier.convertToString(payload.getOwnerId()))
+        .categoryId(Identifier.convertToString(payload.getCategoryId()))
         .title(payload.getTitle())
         .content(payload.getContent())
         .tags(payload.getTags())

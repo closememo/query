@@ -13,7 +13,7 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT c.id, c.owner_id, c.name, c.created_at FROM categories c")
+@Subselect("SELECT c.id, c.owner_id, c.name, c.created_at, c.is_root, c.parent_id FROM categories c")
 @Synchronize({"categories"})
 public class CategoryDTO implements Serializable {
 
@@ -23,4 +23,6 @@ public class CategoryDTO implements Serializable {
   private String ownerId;
   private String name;
   private ZonedDateTime createdAt;
+  private Boolean isRoot;
+  private String parentId;
 }

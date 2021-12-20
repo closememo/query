@@ -28,6 +28,8 @@ public class DocumentReadModel {
   private String id;
   @Column(nullable = false, columnDefinition = "VARCHAR(24)")
   private String ownerId;
+  @Column(nullable = false, columnDefinition = "VARCHAR(24)")
+  private String categoryId;
   @Column(columnDefinition = "VARCHAR(150)")
   private String title;
   @Column(nullable = false, columnDefinition = "LONGTEXT")
@@ -48,12 +50,13 @@ public class DocumentReadModel {
   private String preview;
 
   @Builder(toBuilder = true)
-  public DocumentReadModel(String id, String ownerId, String title, String content,
-      List<String> tags, List<String> autoTags, ZonedDateTime createdAt, ZonedDateTime updatedAt,
-      String preview, DocumentOption option) {
+  public DocumentReadModel(String id, String ownerId, String categoryId, String title,
+      String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
+      ZonedDateTime updatedAt, String preview, DocumentOption option) {
 
     this.id = id;
     this.ownerId = ownerId;
+    this.categoryId = categoryId;
     this.title = title;
     this.content = content;
     this.tags = tags;

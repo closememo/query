@@ -25,7 +25,9 @@ public class CategoryDomainEventHandler {
         .id(payload.getAggregateId())
         .ownerId(Identifier.convertToString(payload.getOwnerId()))
         .name(payload.getName())
-        .createdAt(payload.getCreatedAt());
+        .createdAt(payload.getCreatedAt())
+        .isRoot(payload.getIsRoot())
+        .parentId(Identifier.convertToString(payload.getParentId()));
 
     repository.save(builder.build());
   }

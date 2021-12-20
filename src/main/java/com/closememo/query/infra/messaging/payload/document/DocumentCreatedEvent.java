@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class DocumentCreatedEvent extends DomainEvent {
 
   private Identifier ownerId;
+  private Identifier categoryId;
   private String title;
   private String content;
   private List<String> tags;

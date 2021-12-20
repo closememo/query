@@ -33,12 +33,18 @@ public class CategoryReadModel {
   private String name;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
+  private boolean isRoot;
+  @Column(columnDefinition = "VARCHAR(24)")
+  private String parentId;
 
   @Builder(toBuilder = true)
-  public CategoryReadModel(String id, String ownerId, String name, ZonedDateTime createdAt) {
+  public CategoryReadModel(String id, String ownerId, String name, ZonedDateTime createdAt,
+      boolean isRoot, String parentId) {
     this.id = id;
     this.ownerId = ownerId;
     this.name = name;
     this.createdAt = createdAt;
+    this.isRoot = isRoot;
+    this.parentId = parentId;
   }
 }
