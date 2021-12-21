@@ -2,6 +2,7 @@ package com.closememo.query.infra.messaging.handler;
 
 import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.messaging.payload.document.AutoTagsUpdatedEvent;
+import com.closememo.query.infra.messaging.payload.document.DocumentCategoryUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentCreatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentDeletedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentUpdatedEvent;
@@ -61,6 +62,17 @@ public class DocumentDomainEventHandler {
     }
 
     setAdditionalProperties(builder, payload.getContent());
+
+    repository.save(builder.build());
+  }
+
+  @ServiceActivator(inputChannel = "DocumentCategoryUpdatedEvent")
+  public void handle(DocumentCategoryUpdatedEvent payload) {
+    DocumentReadModel document = repository.findById(payload.getAggregateId())
+        .orElseThrow(ResourceNotFoundException::new);
+
+    DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
+        .categoryId(Identifier.convertToString(payload.getCategoryId()));
 
     repository.save(builder.build());
   }
