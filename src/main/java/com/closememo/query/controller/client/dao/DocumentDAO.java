@@ -20,25 +20,31 @@ public class DocumentDAO {
     this.em = em;
   }
 
-  public long count(String ownerId) {
+  public long count(String ownerId, String categoryId) {
     TypedQuery<Long> query = em
         .createQuery(
-            "SELECT COUNT(d) FROM SimpleDocumentDTO d WHERE d.ownerId = :ownerId",
+            "SELECT COUNT(d) FROM SimpleDocumentDTO d"
+                + " WHERE d.ownerId = :ownerId AND d.categoryId = :categoryId",
             Long.class);
     query.setParameter("ownerId", ownerId);
+    query.setParameter("categoryId", categoryId);
 
     return query.getSingleResult();
   }
 
-  public List<SimpleDocumentDTO> getDocuments(String ownerId, int offset, int limit) {
+  public List<SimpleDocumentDTO> getDocuments(String ownerId, String categoryId,
+      int offset, int limit) {
+
     TypedQuery<SimpleDocumentDTO> query = em
         .createQuery(
             "SELECT d FROM SimpleDocumentDTO d"
-                + " WHERE d.ownerId = :ownerId ORDER BY d.createdAt DESC",
+                + " WHERE d.ownerId = :ownerId AND d.categoryId = :categoryId"
+                + " ORDER BY d.createdAt DESC",
             SimpleDocumentDTO.class)
         .setFirstResult(offset)
         .setMaxResults(limit);
     query.setParameter("ownerId", ownerId);
+    query.setParameter("categoryId", categoryId);
 
     return query.getResultList();
   }

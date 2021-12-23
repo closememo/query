@@ -1,5 +1,6 @@
 package com.closememo.query.controller.client.facade;
 
+import com.closememo.query.controller.client.dao.CategoryDAO;
 import com.closememo.query.controller.client.dao.DocumentDAO;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
@@ -14,24 +15,32 @@ import org.springframework.stereotype.Component;
 @Component
 public class DocumentFacade {
 
+  private final CategoryDAO categoryDAO;
   private final DocumentDAO documentDAO;
   private final ElasticsearchClient elasticsearchClient;
 
-  public DocumentFacade(DocumentDAO documentDAO,
+  public DocumentFacade(CategoryDAO categoryDAO,
+      DocumentDAO documentDAO,
       ElasticsearchClient elasticsearchClient) {
+    this.categoryDAO = categoryDAO;
     this.documentDAO = documentDAO;
     this.elasticsearchClient = elasticsearchClient;
   }
 
-  public OffsetPage<SimpleDocumentDTO> getDocuments(String ownerId, int page, int limit) {
+  public OffsetPage<SimpleDocumentDTO> getDocuments(String ownerId,
+      String categoryId, int page, int limit) {
 
-    long total = documentDAO.count(ownerId);
+    if (StringUtils.isBlank(categoryId)) {
+      categoryId = categoryDAO.getRootCategoryId(ownerId);
+    }
+
+    long total = documentDAO.count(ownerId, categoryId);
     if (total == 0L) {
       return OffsetPage.empty();
     }
 
     int offset = (page - 1) * limit;
-    List<SimpleDocumentDTO> documents = documentDAO.getDocuments(ownerId, offset, limit + 1);
+    List<SimpleDocumentDTO> documents = documentDAO.getDocuments(ownerId, categoryId, offset, limit + 1);
 
     boolean hasNext = documents.size() > limit;
     List<SimpleDocumentDTO> truncatedDocuments = hasNext ? documents.subList(0, limit) : documents;

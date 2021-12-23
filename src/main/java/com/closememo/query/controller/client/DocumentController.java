@@ -28,11 +28,12 @@ public class DocumentController {
   @PreAuthorize("hasRole('USER')")
   @GetMapping("/documents")
   public OffsetPage<SimpleDocumentDTO> getDocuments(
+      @RequestParam(required = false) String categoryId,
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "20") Integer limit,
       @AuthenticationPrincipal AccountId accountId) {
 
-    return documentFacade.getDocuments(accountId.getId(), page, limit);
+    return documentFacade.getDocuments(accountId.getId(), categoryId, page, limit);
   }
 
   @Operation(summary = "get document by document id")
