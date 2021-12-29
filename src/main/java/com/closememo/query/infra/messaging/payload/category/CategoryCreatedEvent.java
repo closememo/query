@@ -17,4 +17,5 @@ public class CategoryCreatedEvent extends DomainEvent {
   private Boolean isRoot;
   private Identifier parentId;
   private Integer depth;
+  private Integer count;
 }
