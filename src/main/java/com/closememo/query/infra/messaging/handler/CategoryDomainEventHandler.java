@@ -9,13 +9,17 @@ import com.closememo.query.infra.messaging.payload.category.CategoryDeletedEvent
 import com.closememo.query.infra.messaging.payload.category.CategoryUpdatedEvent;
 import com.closememo.query.infra.persistence.readmodel.category.CategoryReadModel;
 import com.closememo.query.infra.persistence.readmodel.category.CategoryReadModelRepository;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +34,7 @@ public class CategoryDomainEventHandler {
   }
 
   @ServiceActivator(inputChannel = "CategoryCreatedEvent")
+  @Transactional
   public void handle(CategoryCreatedEvent payload) {
     String parentId = Identifier.convertToString(payload.getParentId());
     CategoryReadModel parentCategory = repository.findById(parentId)
@@ -48,18 +53,20 @@ public class CategoryDomainEventHandler {
         .netCount(0);
     CategoryReadModel savedCategory = repository.save(builder.build());
 
-    // TODO: childrenIds 가 항상 null 이 아니도록 수정
-    List<String> childrenIds = new ArrayList<>();
-    if (CollectionUtils.isNotEmpty(parentCategory.getChildrenIds())) {
-      childrenIds = new ArrayList<>(parentCategory.getChildrenIds());
-    }
-    childrenIds.add(savedCategory.getId());
+    // 이름으로 정렬하여 parent 의 childrenIds 에 추가
+    List<String> childrenIds = Stream
+        .concat(repository.findAllByIdIn(parentCategory.getChildrenIds()), Stream.of(savedCategory))
+        .sorted(Comparator.comparing(CategoryReadModel::getName))
+        .map(CategoryReadModel::getId)
+        .collect(Collectors.toList());
+
     CategoryReadModel.CategoryReadModelBuilder parentBuilder = parentCategory.toBuilder()
         .childrenIds(childrenIds);
     repository.save(parentBuilder.build());
   }
 
   @ServiceActivator(inputChannel = "CategoryUpdatedEvent")
+  @Transactional
   public void handle(CategoryUpdatedEvent payload) {
     CategoryReadModel category = repository.findById(payload.getAggregateId())
         .orElseThrow(ResourceNotFoundException::new);
@@ -131,8 +138,71 @@ public class CategoryDomainEventHandler {
   }
 
   @ServiceActivator(inputChannel = "CategoryDeletedEvent")
+  @Transactional
   public void handle(CategoryDeletedEvent payload) {
-    repository.findById(payload.getAggregateId())
-        .ifPresent(repository::delete);
+    CategoryReadModel category = repository.findById(payload.getAggregateId())
+        .orElseThrow(ResourceNotFoundException::new);
+    // category 삭제
+    repository.delete(category);
+
+    Map<String, CategoryReadModel> categoryMap = repository.findAllByOwnerId(category.getOwnerId())
+        .collect(Collectors.toMap(CategoryReadModel::getId, Function.identity()));
+
+    CategoryReadModel parentCategory = categoryMap.get(category.getParentId());
+    // 부모 category 가 먼저 삭제된 경우
+    if (parentCategory == null) {
+      return;
+    }
+
+    // parent category 의 childrenIds 수정
+    List<String> childrenIds = parentCategory.getChildrenIds().stream()
+        .filter(childrenId -> !StringUtils.equals(childrenId, category.getId()))
+        .collect(Collectors.toList());
+    repository.save(parentCategory.toBuilder().childrenIds(childrenIds).build());
+
+    // netCount 재계산
+    recalculateNetCount(categoryMap);
+  }
+
+  private void recalculateNetCount(Map<String, CategoryReadModel> categoryMap) {
+    CategoryReadModel root = categoryMap.values().stream()
+        .filter(CategoryReadModel::isRoot)
+        .findFirst()
+        .orElseThrow(ResourceNotFoundException::new);
+
+    Map<String, Integer> netCountMap = getNetCountMap(root, categoryMap);
+
+    categoryMap.values().stream()
+        .filter(category -> Objects.nonNull(netCountMap.get(category.getId())))
+        .forEach(category -> {
+          CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
+              .netCount(netCountMap.get(category.getId()));
+          repository.save(builder.build());
+        });
+  }
+
+  private static Map<String, Integer> getNetCountMap(CategoryReadModel target,
+      Map<String, CategoryReadModel> categoryMap) {
+
+    List<String> childrenIds = target.getChildrenIds();
+
+    if (CollectionUtils.isEmpty(childrenIds)) {
+      return Map.of(target.getId(), target.getCount());
+    }
+
+    Map<String, Integer> netCountMap = childrenIds.stream()
+        .map(categoryMap::get)
+        .map(childCategory -> getNetCountMap(childCategory, categoryMap))
+        .flatMap(map -> map.entrySet().stream())
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+    int childrenNetCountSum = netCountMap.entrySet().stream()
+        .filter(entry -> childrenIds.contains(entry.getKey()))
+        .mapToInt(Entry::getValue)
+        .sum();
+    int netCount = target.getCount() + childrenNetCountSum;
+    netCountMap.put(target.getId(), netCount);
+
+    return netCountMap;
   }
 }
