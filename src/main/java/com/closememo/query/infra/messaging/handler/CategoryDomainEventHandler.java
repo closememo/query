@@ -27,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class CategoryDomainEventHandler {
 
+  private static final int PLUS_ONE = 1;
+  private static final int MINUS_ONE = -1;
+
   private final CategoryReadModelRepository repository;
 
   public CategoryDomainEventHandler(CategoryReadModelRepository repository) {
@@ -54,15 +57,7 @@ public class CategoryDomainEventHandler {
     CategoryReadModel savedCategory = repository.save(builder.build());
 
     // 이름으로 정렬하여 parent 의 childrenIds 에 추가
-    List<String> childrenIds = Stream
-        .concat(repository.findAllByIdIn(parentCategory.getChildrenIds()), Stream.of(savedCategory))
-        .sorted(Comparator.comparing(CategoryReadModel::getName))
-        .map(CategoryReadModel::getId)
-        .collect(Collectors.toList());
-
-    CategoryReadModel.CategoryReadModelBuilder parentBuilder = parentCategory.toBuilder()
-        .childrenIds(childrenIds);
-    repository.save(parentBuilder.build());
+    refreshParentChildrenIds(parentCategory, savedCategory);
   }
 
   @ServiceActivator(inputChannel = "CategoryUpdatedEvent")
@@ -74,50 +69,48 @@ public class CategoryDomainEventHandler {
     CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
         .name(payload.getName());
 
-    repository.save(builder.build());
+    CategoryReadModel savedCategory = repository.save(builder.build());
+
+    CategoryReadModel parentCategory = repository.findById(category.getParentId())
+        .orElseThrow(ResourceNotFoundException::new);
+
+    // 이름으로 정렬하여 parent 의 childrenIds 에 추가
+    refreshParentChildrenIds(parentCategory, savedCategory);
+  }
+
+  private void refreshParentChildrenIds(CategoryReadModel parentCategory, CategoryReadModel savedCategory) {
+    List<String> childrenIds = Stream
+        .concat(repository.findAllByIdIn(parentCategory.getChildrenIds()), Stream.of(savedCategory))
+        .sorted(Comparator.comparing(CategoryReadModel::getName))
+        .map(CategoryReadModel::getId)
+        .collect(Collectors.toList());
+
+    CategoryReadModel.CategoryReadModelBuilder parentBuilder = parentCategory.toBuilder()
+        .childrenIds(childrenIds);
+    repository.save(parentBuilder.build());
   }
 
   @ServiceActivator(inputChannel = "CategoryCountIncreasedEvent")
   @Transactional
   public void handle(CategoryCountIncreasedEvent payload) {
-    CategoryReadModel category = repository.findById(payload.getAggregateId())
-        .orElseThrow(ResourceNotFoundException::new);
-    // 카테고리 count, netCount 증가
-    int count = category.getCount();
-    int netCount = category.getNetCount();
-    CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
-        .count(count + 1)
-        .netCount(netCount + 1);
-    repository.save(builder.build());
-
-    Map<String, CategoryReadModel> categoryMap = repository.findAllByOwnerId(category.getOwnerId())
-        .collect(Collectors.toMap(CategoryReadModel::getId, Function.identity()));
-    // 부모의 netCount 증가
-    CategoryReadModel cursor = category;
-    while (true) {
-      CategoryReadModel parent = categoryMap.get(cursor.getParentId());
-      if (parent == null) {
-        break;
-      }
-      int parentNetCount = parent.getNetCount();
-      CategoryReadModel.CategoryReadModelBuilder parentBuilder = parent.toBuilder()
-          .netCount(parentNetCount + 1);
-      repository.save(parentBuilder.build());
-      cursor = parent;
-    }
+    adjustCounts(payload.getAggregateId(), PLUS_ONE);
   }
 
   @ServiceActivator(inputChannel = "CategoryCountDecreasedEvent")
   @Transactional
   public void handle(CategoryCountDecreasedEvent payload) {
-    CategoryReadModel category = repository.findById(payload.getAggregateId())
+    adjustCounts(payload.getAggregateId(), MINUS_ONE);
+  }
+
+  private void adjustCounts(String categoryId, int i) {
+    CategoryReadModel category = repository.findById(categoryId)
         .orElseThrow(ResourceNotFoundException::new);
     // 카테고리 count, netCount 감소
     int count = category.getCount();
     int netCount = category.getNetCount();
     CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
-        .count(count - 1)
-        .netCount(netCount - 1);
+        .count(count + i)
+        .netCount(netCount + i);
     repository.save(builder.build());
 
     Map<String, CategoryReadModel> categoryMap = repository.findAllByOwnerId(category.getOwnerId())
@@ -131,7 +124,7 @@ public class CategoryDomainEventHandler {
       }
       int parentNetCount = parent.getNetCount();
       CategoryReadModel.CategoryReadModelBuilder parentBuilder = parent.toBuilder()
-          .netCount(parentNetCount - 1);
+          .netCount(parentNetCount + i);
       repository.save(parentBuilder.build());
       cursor = parent;
     }
