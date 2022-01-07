@@ -39,25 +39,25 @@ public class CategoryDomainEventHandler {
   @ServiceActivator(inputChannel = "CategoryCreatedEvent")
   @Transactional
   public void handle(CategoryCreatedEvent payload) {
-    String parentId = Identifier.convertToString(payload.getParentId());
-    CategoryReadModel parentCategory = repository.findById(parentId)
-        .orElseThrow(ResourceNotFoundException::new);
-
     CategoryReadModel.CategoryReadModelBuilder builder = CategoryReadModel.builder()
         .id(payload.getAggregateId())
         .ownerId(Identifier.convertToString(payload.getOwnerId()))
         .name(payload.getName())
         .createdAt(payload.getCreatedAt())
         .isRoot(payload.getIsRoot())
-        .parentId(parentId)
+        .parentId(Identifier.convertToString(payload.getParentId()))
         .depth(payload.getDepth())
         .count(payload.getCount())
         .childrenIds(Collections.emptyList())
         .netCount(0);
     CategoryReadModel savedCategory = repository.save(builder.build());
 
-    // 이름으로 정렬하여 parent 의 childrenIds 에 추가
-    refreshParentChildrenIds(parentCategory, savedCategory);
+    if (StringUtils.isNotBlank(savedCategory.getParentId())) {
+      repository.findById(savedCategory.getParentId()).ifPresent(parentCategory -> {
+        // 이름으로 정렬하여 parent 의 childrenIds 에 추가
+        refreshParentChildrenIds(parentCategory, savedCategory);
+      });
+    }
   }
 
   @ServiceActivator(inputChannel = "CategoryUpdatedEvent")
@@ -71,11 +71,12 @@ public class CategoryDomainEventHandler {
 
     CategoryReadModel savedCategory = repository.save(builder.build());
 
-    CategoryReadModel parentCategory = repository.findById(category.getParentId())
-        .orElseThrow(ResourceNotFoundException::new);
-
-    // 이름으로 정렬하여 parent 의 childrenIds 에 추가
-    refreshParentChildrenIds(parentCategory, savedCategory);
+    if (StringUtils.isNotBlank(savedCategory.getParentId())) {
+      repository.findById(savedCategory.getParentId()).ifPresent(parentCategory -> {
+        // 이름으로 정렬하여 parent 의 childrenIds 에 추가
+        refreshParentChildrenIds(parentCategory, savedCategory);
+      });
+    }
   }
 
   private void refreshParentChildrenIds(CategoryReadModel parentCategory, CategoryReadModel savedCategory) {
