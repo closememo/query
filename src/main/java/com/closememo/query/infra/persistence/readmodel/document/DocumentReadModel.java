@@ -8,6 +8,8 @@ import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.AccessLevel;
@@ -45,6 +47,9 @@ public class DocumentReadModel {
   private ZonedDateTime updatedAt;
   @Embedded
   private DocumentOption option;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private Status status;
 
   // ReadOnly
   private String preview;
@@ -52,7 +57,7 @@ public class DocumentReadModel {
   @Builder(toBuilder = true)
   public DocumentReadModel(String id, String ownerId, String categoryId, String title,
       String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
-      ZonedDateTime updatedAt, String preview, DocumentOption option) {
+      ZonedDateTime updatedAt, String preview, DocumentOption option, Status status) {
 
     this.id = id;
     this.ownerId = ownerId;
@@ -65,6 +70,7 @@ public class DocumentReadModel {
     this.updatedAt = updatedAt;
     this.preview = preview;
     this.option = option;
+    this.status = status;
   }
 
   @Embeddable
@@ -73,5 +79,10 @@ public class DocumentReadModel {
   public static class DocumentOption {
 
     private boolean hasAutoTag;
+  }
+
+  public enum Status {
+    NORMAL,
+    DELETED
   }
 }

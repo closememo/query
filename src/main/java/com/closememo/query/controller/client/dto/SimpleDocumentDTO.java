@@ -17,7 +17,7 @@ import org.hibernate.annotations.Synchronize;
 @Getter
 @Immutable
 @Subselect("SELECT d.id, d.owner_id, d.category_id, d.title, d.preview, d.tags, d.auto_tags, d.created_at"
-    + " FROM documents d")
+    + " FROM documents d WHERE d.status = 'NORMAL'")
 @Synchronize({"documents"})
 public class SimpleDocumentDTO implements Serializable {
 

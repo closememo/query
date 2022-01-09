@@ -5,8 +5,10 @@ import com.closememo.query.infra.messaging.payload.document.AutoTagsUpdatedEvent
 import com.closememo.query.infra.messaging.payload.document.DocumentCategoryUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentCreatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentDeletedEvent;
+import com.closememo.query.infra.messaging.payload.document.DocumentDeletedStatusSetEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentUpdatedEvent;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel;
+import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel.Status;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModelRepository;
 import com.closememo.query.infra.exception.ResourceNotFoundException;
 import java.util.Collections;
@@ -37,7 +39,8 @@ public class DocumentDomainEventHandler {
         .content(payload.getContent())
         .tags(payload.getTags())
         .createdAt(payload.getCreatedAt())
-        .option(payload.getOption());
+        .option(payload.getOption())
+        .status(payload.getStatus());
     setAdditionalProperties(builder, payload.getContent());
 
     repository.save(builder.build());
@@ -81,6 +84,16 @@ public class DocumentDomainEventHandler {
   public void handle(DocumentDeletedEvent payload) {
     repository.findById(payload.getAggregateId())
         .ifPresent(repository::delete);
+  }
+
+  @ServiceActivator(inputChannel = "DocumentDeletedStatusSetEvent")
+  public void handle(DocumentDeletedStatusSetEvent payload) {
+    repository.findById(payload.getAggregateId())
+        .ifPresent(document -> {
+          DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
+              .status(Status.DELETED);
+          repository.save(builder.build());
+        });
   }
 
   @ServiceActivator(inputChannel = "AutoTagsUpdatedEvent")
