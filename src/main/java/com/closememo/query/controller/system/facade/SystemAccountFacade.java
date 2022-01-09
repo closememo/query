@@ -2,6 +2,7 @@ package com.closememo.query.controller.system.facade;
 
 import com.closememo.query.controller.system.dao.SystemAccountDAO;
 import com.closememo.query.controller.system.dto.SystemAccountDTO;
+import com.closememo.query.controller.system.dto.SystemSimpleAccountDTO;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,5 +41,14 @@ public class SystemAccountFacade {
     // 2. find account by syncToken as ID (login)
     return systemAccountDAO.selectByTokens(tokens)
         .orElseGet(() -> getAccountById(syncToken));
+  }
+
+  public SystemSimpleAccountDTO getAccountByEmail(String email) {
+    if (StringUtils.isBlank(email)) {
+      throw new AccountNotFoundException();
+    }
+
+    return systemAccountDAO.selectByEmail(email)
+        .orElseThrow(AccountNotFoundException::new);
   }
 }

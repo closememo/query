@@ -1,6 +1,7 @@
 package com.closememo.query.controller.system;
 
 import com.closememo.query.controller.system.dto.SystemAccountDTO;
+import com.closememo.query.controller.system.dto.SystemSimpleAccountDTO;
 import com.closememo.query.controller.system.facade.SystemAccountFacade;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,5 +28,10 @@ public class SystemAccountController {
       @RequestParam(defaultValue = "") String syncToken) {
 
     return systemAccountFacade.getAccountByTokens(accessToken, syncToken);
+  }
+
+  @GetMapping("/account-by-email")
+  public SystemSimpleAccountDTO getAccountByEmail(@RequestParam String email) {
+    return systemAccountFacade.getAccountByEmail(email);
   }
 }

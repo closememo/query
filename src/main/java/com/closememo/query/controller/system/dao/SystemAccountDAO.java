@@ -1,6 +1,7 @@
 package com.closememo.query.controller.system.dao;
 
 import com.closememo.query.controller.system.dto.SystemAccountDTO;
+import com.closememo.query.controller.system.dto.SystemSimpleAccountDTO;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
@@ -38,6 +39,20 @@ public class SystemAccountDAO {
             "SELECT a FROM SystemAccountDTO a WHERE a.tokenId IN :tokens",
             SystemAccountDTO.class);
     query.setParameter("tokens", tokens);
+
+    try {
+      return Optional.of(query.getSingleResult());
+    } catch (NoResultException e) {
+      return Optional.empty();
+    }
+  }
+
+  public Optional<SystemSimpleAccountDTO> selectByEmail(String email) {
+    TypedQuery<SystemSimpleAccountDTO> query = em
+        .createQuery(
+            "SELECT a FROM SystemSimpleAccountDTO a WHERE a.email = :email",
+            SystemSimpleAccountDTO.class);
+    query.setParameter("email", email);
 
     try {
       return Optional.of(query.getSingleResult());
