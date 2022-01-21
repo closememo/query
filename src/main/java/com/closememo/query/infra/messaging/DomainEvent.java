@@ -14,6 +14,7 @@ public class DomainEvent extends Message implements Serializable {
   protected String aggregateId;
   protected int eventVersion;
   protected ZonedDateTime occurredOn;
+  protected boolean needAck;
 
   @JsonIgnore
   @Override

@@ -5,6 +5,6 @@ public abstract class Message {
   public abstract MessageType getMessageType();
 
   public enum MessageType {
-    DOMAIN_EVENT
+    DOMAIN_EVENT, ACK_EVENT
   }
 }
