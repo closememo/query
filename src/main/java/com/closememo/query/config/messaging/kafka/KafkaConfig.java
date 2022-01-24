@@ -1,5 +1,7 @@
 package com.closememo.query.config.messaging.kafka;
 
+import static org.reflections.scanners.Scanners.SubTypes;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -16,6 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -76,7 +80,10 @@ public class KafkaConfig {
   }
 
   private Map<String, Class<?>> getTopicClassMap() {
-    Reflections reflections = new Reflections("com.closememo.query.infra.messaging");
+    Reflections reflections = new Reflections(new ConfigurationBuilder()
+        .setUrls(ClasspathHelper.forClass(DomainEvent.class))
+        .setScanners(SubTypes));
+
     return reflections.getSubTypesOf(DomainEvent.class)
         .stream()
         .map(clazz -> Pair.of(clazz.getSimpleName(), clazz))
