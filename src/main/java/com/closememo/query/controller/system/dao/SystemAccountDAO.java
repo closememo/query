@@ -2,7 +2,6 @@ package com.closememo.query.controller.system.dao;
 
 import com.closememo.query.controller.system.dto.SystemAccountDTO;
 import com.closememo.query.controller.system.dto.SystemSimpleAccountDTO;
-import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -33,12 +32,12 @@ public class SystemAccountDAO {
     }
   }
 
-  public Optional<SystemAccountDTO> selectByTokens(@NonNull List<String> tokens) {
+  public Optional<SystemAccountDTO> selectByToken(@NonNull String token) {
     TypedQuery<SystemAccountDTO> query = em
         .createQuery(
-            "SELECT a FROM SystemAccountDTO a WHERE a.tokenId IN :tokens",
+            "SELECT a FROM SystemAccountDTO a WHERE a.tokenId = :token",
             SystemAccountDTO.class);
-    query.setParameter("tokens", tokens);
+    query.setParameter("token", token);
 
     try {
       return Optional.of(query.getSingleResult());

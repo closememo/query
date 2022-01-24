@@ -23,11 +23,9 @@ public class SystemAccountController {
     return systemAccountFacade.getAccountById(id);
   }
 
-  @GetMapping("/account-by-tokens")
-  public SystemAccountDTO getAccountByTokens(@RequestParam String accessToken,
-      @RequestParam(defaultValue = "") String syncToken) {
-
-    return systemAccountFacade.getAccountByTokens(accessToken, syncToken);
+  @GetMapping("/account-by-token")
+  public SystemAccountDTO getAccountByToken(@RequestParam String accessToken) {
+    return systemAccountFacade.getAccountByToken(accessToken);
   }
 
   @GetMapping("/account-by-email")
