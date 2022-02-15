@@ -2,6 +2,7 @@ package com.closememo.query.controller.client;
 
 import com.closememo.query.config.openapi.apitags.DocumentApiTag;
 import com.closememo.query.config.security.authentication.account.AccountId;
+import com.closememo.query.controller.client.dao.DocumentOrderType;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import com.closememo.query.controller.client.facade.DocumentFacade;
@@ -31,9 +32,10 @@ public class DocumentController {
       @RequestParam(required = false) String categoryId,
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "20") Integer limit,
+      @RequestParam(defaultValue = "CREATED_NEWEST") DocumentOrderType orderType,
       @AuthenticationPrincipal AccountId accountId) {
 
-    return documentFacade.getDocuments(accountId.getId(), categoryId, page, limit);
+    return documentFacade.getDocuments(accountId.getId(), categoryId, orderType, page, limit);
   }
 
   @Operation(summary = "get document by document id")
