@@ -45,11 +45,10 @@ public class CategoryReadModel {
   @Column(columnDefinition = "JSON")
   @Convert(converter = StringListConverter.class)
   private List<String> childrenIds;
-  private int netCount;
 
   @Builder(toBuilder = true)
   public CategoryReadModel(String id, String ownerId, String name, ZonedDateTime createdAt,
-      boolean isRoot, String parentId, int depth, int count, List<String> childrenIds, int netCount) {
+      boolean isRoot, String parentId, int depth, int count, List<String> childrenIds) {
     this.id = id;
     this.ownerId = ownerId;
     this.name = name;
@@ -59,6 +58,5 @@ public class CategoryReadModel {
     this.depth = depth;
     this.count = count;
     this.childrenIds = childrenIds;
-    this.netCount = netCount;
   }
 }

@@ -13,12 +13,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.stereotype.Component;
@@ -48,8 +45,7 @@ public class CategoryDomainEventHandler {
         .parentId(Identifier.convertToString(payload.getParentId()))
         .depth(payload.getDepth())
         .count(payload.getCount())
-        .childrenIds(Collections.emptyList())
-        .netCount(0);
+        .childrenIds(Collections.emptyList());
     CategoryReadModel savedCategory = repository.save(builder.build());
 
     if (StringUtils.isNotBlank(savedCategory.getParentId())) {
@@ -94,41 +90,23 @@ public class CategoryDomainEventHandler {
   @ServiceActivator(inputChannel = "CategoryCountIncreasedEvent")
   @Transactional
   public void handle(CategoryCountIncreasedEvent payload) {
-    adjustCounts(payload.getAggregateId(), PLUS_ONE);
+    changeCounts(payload.getAggregateId(), PLUS_ONE);
   }
 
   @ServiceActivator(inputChannel = "CategoryCountDecreasedEvent")
   @Transactional
   public void handle(CategoryCountDecreasedEvent payload) {
-    adjustCounts(payload.getAggregateId(), MINUS_ONE);
+    changeCounts(payload.getAggregateId(), MINUS_ONE);
   }
 
-  private void adjustCounts(String categoryId, int i) {
+  private void changeCounts(String categoryId, int i) {
     CategoryReadModel category = repository.findById(categoryId)
         .orElseThrow(ResourceNotFoundException::new);
-    // 카테고리 count, netCount 감소
+    // 카테고리 count 증가/감소
     int count = category.getCount();
-    int netCount = category.getNetCount();
     CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
-        .count(count + i)
-        .netCount(netCount + i);
+        .count(count + i);
     repository.save(builder.build());
-
-    Map<String, CategoryReadModel> categoryMap = repository.findAllByOwnerId(category.getOwnerId())
-        .collect(Collectors.toMap(CategoryReadModel::getId, Function.identity()));
-    // 부모의 netCount 감소
-    CategoryReadModel cursor = category;
-    while (true) {
-      CategoryReadModel parent = categoryMap.get(cursor.getParentId());
-      if (parent == null) {
-        break;
-      }
-      int parentNetCount = parent.getNetCount();
-      CategoryReadModel.CategoryReadModelBuilder parentBuilder = parent.toBuilder()
-          .netCount(parentNetCount + i);
-      repository.save(parentBuilder.build());
-      cursor = parent;
-    }
   }
 
   @ServiceActivator(inputChannel = "CategoryDeletedEvent")
@@ -153,50 +131,5 @@ public class CategoryDomainEventHandler {
         .filter(childrenId -> !StringUtils.equals(childrenId, category.getId()))
         .collect(Collectors.toList());
     repository.save(parentCategory.toBuilder().childrenIds(childrenIds).build());
-
-    // netCount 재계산
-    recalculateNetCount(categoryMap);
-  }
-
-  private void recalculateNetCount(Map<String, CategoryReadModel> categoryMap) {
-    CategoryReadModel root = categoryMap.values().stream()
-        .filter(CategoryReadModel::isRoot)
-        .findFirst()
-        .orElseThrow(ResourceNotFoundException::new);
-
-    Map<String, Integer> netCountMap = getNetCountMap(root, categoryMap);
-
-    categoryMap.values().stream()
-        .filter(category -> Objects.nonNull(netCountMap.get(category.getId())))
-        .forEach(category -> {
-          CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
-              .netCount(netCountMap.get(category.getId()));
-          repository.save(builder.build());
-        });
-  }
-
-  private static Map<String, Integer> getNetCountMap(CategoryReadModel target,
-      Map<String, CategoryReadModel> categoryMap) {
-
-    List<String> childrenIds = target.getChildrenIds();
-
-    if (CollectionUtils.isEmpty(childrenIds)) {
-      return Map.of(target.getId(), target.getCount());
-    }
-
-    Map<String, Integer> netCountMap = childrenIds.stream()
-        .map(categoryMap::get)
-        .map(childCategory -> getNetCountMap(childCategory, categoryMap))
-        .flatMap(map -> map.entrySet().stream())
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-    int childrenNetCountSum = netCountMap.entrySet().stream()
-        .filter(entry -> childrenIds.contains(entry.getKey()))
-        .mapToInt(Entry::getValue)
-        .sum();
-    int netCount = target.getCount() + childrenNetCountSum;
-    netCountMap.put(target.getId(), netCount);
-
-    return netCountMap;
   }
 }

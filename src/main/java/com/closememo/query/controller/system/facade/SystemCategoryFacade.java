@@ -6,8 +6,6 @@ import com.closememo.query.infra.persistence.readmodel.document.DocumentReadMode
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -31,7 +29,6 @@ public class SystemCategoryFacade {
     // 순서가 중요하다.
     refreshChildrenIds(accountId);
     refreshCount(accountId);
-    refreshNetCount(accountId);
   }
 
   private void refreshChildrenIds(String accountId) {
@@ -75,51 +72,5 @@ public class SystemCategoryFacade {
 
       categoryRepository.save(builder.build());
     }
-  }
-
-  private void refreshNetCount(String accountId) {
-    List<CategoryReadModel> categories = categoryRepository.findAllByOwnerId(accountId)
-        .collect(Collectors.toList());
-
-    Map<String, CategoryReadModel> idCategoryMap = categories.stream()
-        .collect(Collectors.toMap(CategoryReadModel::getId, Function.identity()));
-
-    CategoryReadModel root = categories.stream()
-        .filter(CategoryReadModel::isRoot)
-        .findFirst()
-        .orElseThrow(CategoryNotFoundException::new);
-
-    Map<String, Integer> idNetCountMap = getIdNetCountMap(root, idCategoryMap);
-
-    categories.forEach(category -> {
-      CategoryReadModel.CategoryReadModelBuilder builder = category.toBuilder()
-          .netCount(idNetCountMap.get(category.getId()));
-      categoryRepository.save(builder.build());
-    });
-  }
-
-  private Map<String, Integer> getIdNetCountMap(CategoryReadModel target,
-      Map<String, CategoryReadModel> idCategoryMap) {
-
-    List<String> childrenIds = target.getChildrenIds();
-
-    if (CollectionUtils.isEmpty(childrenIds)) {
-      return Map.of(target.getId(), target.getCount());
-    }
-
-    Map<String, Integer> idNetCountMap = childrenIds.stream()
-        .map(idCategoryMap::get)
-        .map(childCategory -> getIdNetCountMap(childCategory, idCategoryMap))
-        .flatMap(map -> map.entrySet().stream())
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-    int childrenNetCountSum = idNetCountMap.entrySet().stream()
-        .filter(entry -> childrenIds.contains(entry.getKey()))
-        .mapToInt(Entry::getValue)
-        .sum();
-    int netCount = target.getCount() + childrenNetCountSum;
-    idNetCountMap.put(target.getId(), netCount);
-
-    return idNetCountMap;
   }
 }
