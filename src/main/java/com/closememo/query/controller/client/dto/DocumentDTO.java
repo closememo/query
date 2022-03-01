@@ -1,6 +1,7 @@
 package com.closememo.query.controller.client.dto;
 
 import com.closememo.query.infra.converter.StringListConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -18,8 +19,11 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT d.id, d.owner_id, d.title, d.content, d.tags, d.created_at, d.updated_at, d.has_auto_tag"
-    + " FROM documents d WHERE d.status = 'NORMAL'")
+@Subselect(
+    "SELECT d.id, d.owner_id, d.title, d.content, d.tags, d.created_at, d.updated_at,"
+        + " d.has_auto_tag, b.id AS bookmark_id"
+        + " FROM documents d LEFT JOIN bookmarks b ON d.id = b.document_id"
+        + " WHERE d.status = 'NORMAL'")
 @Synchronize({"documents"})
 public class DocumentDTO implements Serializable {
 
@@ -34,12 +38,18 @@ public class DocumentDTO implements Serializable {
   private ZonedDateTime updatedAt;
   @Embedded
   private DocumentOption option;
+  @JsonIgnore
+  private String bookmarkId;
 
-  @Schema(name = "DocumentDTO_LineChunk")
+  @Schema(name = "DocumentDTO_DocumentOption")
   @Embeddable
   @Getter
-  public static class DocumentOption implements Serializable{
+  public static class DocumentOption implements Serializable {
 
     private boolean hasAutoTag;
+  }
+
+  public boolean isBookmarked() {
+    return bookmarkId != null;
   }
 }

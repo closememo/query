@@ -1,5 +1,6 @@
 package com.closememo.query.controller.client.dao;
 
+import com.closememo.query.controller.client.dto.BookmarkedDocumentDTO;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import java.util.List;
@@ -90,6 +91,17 @@ public class DocumentDAO {
         .map(resultMap::get)
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  public List<BookmarkedDocumentDTO> getBookmarkedDocuments(String ownerId) {
+    TypedQuery<BookmarkedDocumentDTO> query = em
+        .createQuery(
+            "SELECT d FROM BookmarkedDocumentDTO d"
+                + " WHERE d.ownerId = :ownerId ORDER BY d.bookmarkOrder",
+            BookmarkedDocumentDTO.class);
+    query.setParameter("ownerId", ownerId);
+
+    return query.getResultList();
   }
 
   public DocumentDTO getDocument(String documentId) {

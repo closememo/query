@@ -3,6 +3,7 @@ package com.closememo.query.controller.client;
 import com.closememo.query.config.openapi.apitags.DocumentApiTag;
 import com.closememo.query.config.security.authentication.account.AccountId;
 import com.closememo.query.controller.client.dao.DocumentOrderType;
+import com.closememo.query.controller.client.dto.BookmarkedDocumentDTO;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import com.closememo.query.controller.client.facade.DocumentFacade;
@@ -52,5 +53,12 @@ public class DocumentController {
   public List<SimpleDocumentDTO> getDocumentsByTag(@RequestParam String tag,
       @AuthenticationPrincipal AccountId accountId) {
     return documentFacade.getDocumentsByTag(accountId.getId(), tag);
+  }
+
+  @PreAuthorize("hasRole('USER')")
+  @GetMapping("/bookmarked-documents")
+  public List<BookmarkedDocumentDTO> getBookmarkedDocuments(
+      @AuthenticationPrincipal AccountId accountId) {
+    return documentFacade.getBookmarkedDocuments(accountId.getId());
   }
 }

@@ -3,6 +3,7 @@ package com.closememo.query.controller.client.facade;
 import com.closememo.query.controller.client.dao.CategoryDAO;
 import com.closememo.query.controller.client.dao.DocumentDAO;
 import com.closememo.query.controller.client.dao.DocumentOrderType;
+import com.closememo.query.controller.client.dto.BookmarkedDocumentDTO;
 import com.closememo.query.controller.client.dto.DocumentDTO;
 import com.closememo.query.controller.client.dto.SimpleDocumentDTO;
 import com.closememo.query.controller.shared.dto.OffsetPage;
@@ -61,6 +62,10 @@ public class DocumentFacade {
     List<String> postId = elasticsearchClient.searchPostIdsByTag(request);
 
     return documentDAO.getDocuments(ownerId, postId);
+  }
+
+  public List<BookmarkedDocumentDTO> getBookmarkedDocuments(String ownerId) {
+    return documentDAO.getBookmarkedDocuments(ownerId);
   }
 
   private void checkAuthority(DocumentDTO documentDTO, String ownerId) {
