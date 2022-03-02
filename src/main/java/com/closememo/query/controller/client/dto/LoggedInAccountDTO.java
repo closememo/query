@@ -3,6 +3,8 @@ package com.closememo.query.controller.client.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import lombok.Getter;
 import lombok.ToString;
@@ -13,7 +15,7 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT a.id FROM accounts a")
+@Subselect("SELECT a.id, a.document_count, a.document_order_type FROM accounts a")
 @Synchronize({"accounts"})
 @ToString
 public class LoggedInAccountDTO implements Serializable {
@@ -21,8 +23,17 @@ public class LoggedInAccountDTO implements Serializable {
   @JsonIgnore
   @Id
   private String id;
+  @Enumerated(EnumType.STRING)
+  private DocumentOrderType documentOrderType;
+  private int documentCount;
 
   public boolean getIsLoggedIn() {
     return true;
+  }
+
+  public enum DocumentOrderType {
+    CREATED_NEWEST,
+    CREATED_OLDEST,
+    UPDATED_NEWEST,
   }
 }

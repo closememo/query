@@ -10,7 +10,10 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -45,16 +48,19 @@ public class AccountReadModel {
   @Column(nullable = false, columnDefinition = "VARCHAR(100)")
   @Convert(converter = StringRolesConverter.class)
   private Set<String> roles;
+  @Embedded
+  private AccountOption option;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
   @Builder(toBuilder = true)
-  public AccountReadModel(String id, String email,
-      List<Token> tokens, Set<String> roles, ZonedDateTime createdAt) {
+  public AccountReadModel(String id, String email, List<Token> tokens,
+      Set<String> roles, AccountOption option, ZonedDateTime createdAt) {
     this.id = id;
     this.email = email;
     this.tokens = tokens;
     this.roles = roles;
+    this.option = option;
     this.createdAt = createdAt;
   }
 
@@ -72,5 +78,22 @@ public class AccountReadModel {
     private long exp;
     @Column(columnDefinition = "VARCHAR(24)")
     private String childId;
+  }
+
+  @Embeddable
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class AccountOption {
+
+    @Column(columnDefinition = "VARCHAR(20)")
+    @Enumerated(EnumType.STRING)
+    private DocumentOrderType documentOrderType;
+    private int documentCount;
+  }
+
+  public enum DocumentOrderType {
+    CREATED_NEWEST,
+    CREATED_OLDEST,
+    UPDATED_NEWEST,
   }
 }

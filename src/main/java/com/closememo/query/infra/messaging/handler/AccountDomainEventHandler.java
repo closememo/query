@@ -2,6 +2,7 @@ package com.closememo.query.infra.messaging.handler;
 
 import com.closememo.query.infra.messaging.payload.account.AccountCreatedEvent;
 import com.closememo.query.infra.messaging.payload.account.AccountDeletedEvent;
+import com.closememo.query.infra.messaging.payload.account.AccountOptionUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.account.AccountTokenUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.account.AccountTokensClearedEvent;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel;
@@ -22,8 +23,8 @@ public class AccountDomainEventHandler {
 
   @ServiceActivator(inputChannel = "AccountCreatedEvent")
   public void handle(AccountCreatedEvent payload) {
-    AccountReadModel account = new AccountReadModel(payload.getAggregateId(),
-        payload.getEmail(), payload.getTokens(), payload.getRoles(), payload.getCreatedAt());
+    AccountReadModel account = new AccountReadModel(payload.getAggregateId(), payload.getEmail(),
+        payload.getTokens(), payload.getRoles(), payload.getOption(), payload.getCreatedAt());
 
     repository.save(account);
   }
@@ -53,5 +54,16 @@ public class AccountDomainEventHandler {
   public void handle(AccountDeletedEvent payload) {
     repository.findById(payload.getAggregateId())
         .ifPresent(repository::delete);
+  }
+
+  @ServiceActivator(inputChannel = "AccountOptionUpdatedEvent")
+  public void handle(AccountOptionUpdatedEvent payload) {
+    AccountReadModel account = repository.findById(payload.getAggregateId())
+        .orElseThrow(ResourceNotFoundException::new);
+
+    AccountReadModel.AccountReadModelBuilder builder = account.toBuilder()
+        .option(payload.getOption());
+
+    repository.save(builder.build());
   }
 }

@@ -1,6 +1,7 @@
 package com.closememo.query.infra.messaging.payload.account;
 
 import com.closememo.query.infra.messaging.payload.Identifier;
+import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.AccountOption;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.Token;
 import com.closememo.query.infra.messaging.DomainEvent;
 import java.time.ZonedDateTime;
@@ -18,5 +19,6 @@ public class AccountCreatedEvent extends DomainEvent {
   private String email;
   private List<Token> tokens;
   private Set<String> roles;
+  private AccountOption option;
   private ZonedDateTime createdAt;
 }
