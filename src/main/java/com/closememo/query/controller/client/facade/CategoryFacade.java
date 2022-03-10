@@ -33,6 +33,7 @@ public class CategoryFacade {
     Map<String, Integer> netCountMap = getNetCountMap(root, categoryMap);
 
     return categories.stream()
+        .filter(categoryDTO -> netCountMap.containsKey(categoryDTO.getId())) // TODO: 가끔 지워지지 않은 category 가 있어서 임시로 필터링
         .map(categoryDTO -> categoryDTO.setNetCount(netCountMap.get(categoryDTO.getId())))
         .collect(Collectors.toList());
   }
