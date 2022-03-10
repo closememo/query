@@ -50,17 +50,20 @@ public class AccountReadModel {
   private Set<String> roles;
   @Embedded
   private AccountOption option;
+  @Embedded
+  private AccountTrack track;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
 
   @Builder(toBuilder = true)
-  public AccountReadModel(String id, String email, List<Token> tokens,
-      Set<String> roles, AccountOption option, ZonedDateTime createdAt) {
+  public AccountReadModel(String id, String email, List<Token> tokens, Set<String> roles,
+      AccountOption option, AccountTrack track, ZonedDateTime createdAt) {
     this.id = id;
     this.email = email;
     this.tokens = tokens;
     this.roles = roles;
     this.option = option;
+    this.track = track;
     this.createdAt = createdAt;
   }
 
@@ -95,5 +98,14 @@ public class AccountReadModel {
     CREATED_NEWEST,
     CREATED_OLDEST,
     UPDATED_NEWEST,
+  }
+
+  @Embeddable
+  @Getter
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class AccountTrack {
+
+    @Column(columnDefinition = "VARCHAR(24)")
+    private String recentlyViewedCategoryId;
   }
 }

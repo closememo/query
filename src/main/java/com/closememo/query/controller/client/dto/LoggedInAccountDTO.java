@@ -19,8 +19,9 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT a.id, a.roles, a.document_count, a.document_order_type FROM accounts a")
-@Synchronize({"accounts"})
+@Subselect("SELECT a.id, a.roles, a.document_count, a.document_order_type, c.id AS recently_viewed_category_id"
+    + " FROM accounts a LEFT JOIN categories c ON (a.id = c.owner_id AND a.recently_viewed_category_id = c.id)")
+@Synchronize({"accounts", "categories"})
 @ToString
 public class LoggedInAccountDTO implements Serializable {
 
@@ -33,6 +34,7 @@ public class LoggedInAccountDTO implements Serializable {
   @Enumerated(EnumType.STRING)
   private DocumentOrderType documentOrderType;
   private int documentCount;
+  private String recentlyViewedCategoryId;
 
   public boolean getIsLoggedIn() {
     return true;
