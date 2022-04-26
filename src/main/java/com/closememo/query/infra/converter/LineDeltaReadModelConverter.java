@@ -1,8 +1,8 @@
 package com.closememo.query.infra.converter;
 
 import com.closememo.query.infra.helper.JsonUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.closememo.query.infra.persistence.readmodel.difference.DifferenceReadModel.LineDelta;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import javax.persistence.AttributeConverter;
 

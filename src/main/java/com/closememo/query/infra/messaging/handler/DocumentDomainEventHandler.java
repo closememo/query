@@ -1,5 +1,6 @@
 package com.closememo.query.infra.messaging.handler;
 
+import com.closememo.query.infra.exception.ResourceNotFoundException;
 import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.messaging.payload.document.AutoTagsUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentCategoryUpdatedEvent;
@@ -10,7 +11,6 @@ import com.closememo.query.infra.messaging.payload.document.DocumentUpdatedEvent
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel.Status;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModelRepository;
-import com.closememo.query.infra.exception.ResourceNotFoundException;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

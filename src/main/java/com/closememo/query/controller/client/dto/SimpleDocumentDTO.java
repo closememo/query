@@ -1,7 +1,7 @@
 package com.closememo.query.controller.client.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.closememo.query.infra.converter.StringListConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.closememo.query.controller.system.dto;
 
+import com.closememo.query.infra.converter.RolesConverter;
 import com.closememo.query.infra.type.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.closememo.query.infra.converter.RolesConverter;
 import java.util.Set;
 import javax.persistence.Convert;
 import javax.persistence.Entity;

@@ -1,10 +1,10 @@
 package com.closememo.query.infra.messaging.payload.account;
 
+import com.closememo.query.infra.messaging.DomainEvent;
 import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.AccountOption;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.AccountTrack;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.Token;
-import com.closememo.query.infra.messaging.DomainEvent;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;

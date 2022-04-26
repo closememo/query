@@ -1,8 +1,8 @@
 package com.closememo.query.infra.messaging.payload.difference;
 
-import com.closememo.query.infra.persistence.readmodel.difference.DifferenceReadModel.LineDelta;
 import com.closememo.query.infra.messaging.DomainEvent;
 import com.closememo.query.infra.messaging.payload.Identifier;
+import com.closememo.query.infra.persistence.readmodel.difference.DifferenceReadModel.LineDelta;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.AccessLevel;

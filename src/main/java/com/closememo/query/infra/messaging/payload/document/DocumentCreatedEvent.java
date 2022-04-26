@@ -1,7 +1,7 @@
 package com.closememo.query.infra.messaging.payload.document;
 
-import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.messaging.DomainEvent;
+import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel.DocumentOption;
 import com.closememo.query.infra.persistence.readmodel.document.DocumentReadModel.Status;
 import java.time.ZonedDateTime;

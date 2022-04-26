@@ -1,8 +1,8 @@
 package com.closememo.query.infra.messaging.payload.account;
 
+import com.closememo.query.infra.messaging.DomainEvent;
 import com.closememo.query.infra.messaging.payload.Identifier;
 import com.closememo.query.infra.persistence.readmodel.account.AccountReadModel.Token;
-import com.closememo.query.infra.messaging.DomainEvent;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
