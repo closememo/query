@@ -8,16 +8,10 @@ import com.closememo.query.controller.system.dao.SystemAccountDAO;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.annotation.Profile;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.stereotype.Component;
 
-@Profile({"local", "dev"})
-@Order(3)
-@Component
 public class DevelopBypassAuthenticationFilter extends AbstractPreAuthenticatedProcessingFilter {
 
   public final static String X_BYPASS_ACCOUNT_ID = "X-Bypass-Account-Id";
