@@ -1,5 +1,6 @@
 package com.closememo.query.config.messaging.integration;
 
+import com.closememo.query.config.mdc.MdcTaskDecorator;
 import com.zaxxer.hikari.HikariConfig;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ public class TaskExecutorConfig {
     executor.setThreadNamePrefix("MSG-EXE-");
     executor.setWaitForTasksToCompleteOnShutdown(true);
     executor.setAwaitTerminationSeconds(30);
+    executor.setTaskDecorator(new MdcTaskDecorator());
     executor.initialize();
 
     return executor;
