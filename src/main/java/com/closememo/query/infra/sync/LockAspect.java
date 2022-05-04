@@ -30,9 +30,13 @@ public class LockAspect {
       DomainEvent domainEvent = (DomainEvent) payload;
       Integer hash = domainEvent.getAggregateId().hashCode();
 
+      Object result;
       lockManager.lock(hash);
-      Object result = pjp.proceed();
-      lockManager.unlock(hash);
+      try {
+        result = pjp.proceed();
+      } finally {
+        lockManager.unlock(hash);
+      }
 
       return result;
     } else {
