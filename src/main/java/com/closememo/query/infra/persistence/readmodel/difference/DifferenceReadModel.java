@@ -24,6 +24,8 @@ public class DifferenceReadModel {
   @Id
   @Column(unique = true, nullable = false)
   private String id;
+  @Column(nullable = false, columnDefinition = "VARCHAR(24)")
+  private String ownerId;
   @Column(nullable = false)
   private String documentId;
   @Column(nullable = false)
@@ -33,30 +35,47 @@ public class DifferenceReadModel {
   private List<LineDelta> lineDeltas;
   @Column(nullable = false)
   private ZonedDateTime createdAt;
+  // read-only
+  private int inserted;
+  private int deleted;
+  private int changed;
 
-  @Builder
-  public DifferenceReadModel(String id, String documentId, long documentVersion,
-      List<LineDelta> lineDeltas, ZonedDateTime createdAt) {
+  @Builder(toBuilder = true)
+  public DifferenceReadModel(String id, String ownerId, String documentId, long documentVersion,
+      List<LineDelta> lineDeltas, ZonedDateTime createdAt, int inserted, int deleted, int changed) {
     this.id = id;
+    this.ownerId = ownerId;
     this.documentId = documentId;
     this.documentVersion = documentVersion;
     this.lineDeltas = lineDeltas;
     this.createdAt = createdAt;
+    this.inserted = inserted;
+    this.deleted = deleted;
+    this.changed = changed;
   }
 
   @Getter
   public static class LineDelta {
 
-    private DeltaType deltaType;
-    private LineChunk source;
-    private LineChunk target;
+    private DeltaType type;
+    private Line source;
+    private Line target;
+    private List<ChangePatch> changePatches;
   }
 
   @Getter
-  public static class LineChunk {
+  public static class Line {
 
     private int position;
-    private List<String> lines;
+    private String value;
+  }
+
+  @Getter
+  public static class ChangePatch {
+
+    private DeltaType type;
+    private String value;
+    private String changed;
   }
 
   public enum DeltaType {

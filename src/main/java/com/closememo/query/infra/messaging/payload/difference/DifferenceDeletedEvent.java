@@ -11,4 +11,13 @@ import lombok.NoArgsConstructor;
 public class DifferenceDeletedEvent extends DomainEvent {
 
   private Identifier differenceId;
+  private Identifier documentId;
+
+  /**
+   * Difference 삭제에 대한 이벤트이지만, Document 에 대해 lock 을 걸어야 해서 추가
+   */
+  @Override
+  public Integer getHash() {
+    return Identifier.convertToString(documentId).hashCode();
+  }
 }

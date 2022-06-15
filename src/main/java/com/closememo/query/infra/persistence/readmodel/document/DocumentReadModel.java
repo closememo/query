@@ -53,12 +53,13 @@ public class DocumentReadModel {
 
   // ReadOnly
   private String preview;
+  private int diffCount;
 
   @Builder(toBuilder = true)
   public DocumentReadModel(String id, String ownerId, String categoryId, String title,
       String content, List<String> tags, List<String> autoTags, ZonedDateTime createdAt,
-      ZonedDateTime updatedAt, String preview, DocumentOption option, Status status) {
-
+      ZonedDateTime updatedAt, DocumentOption option, Status status,
+      String preview, int diffCount) {
     this.id = id;
     this.ownerId = ownerId;
     this.categoryId = categoryId;
@@ -68,9 +69,10 @@ public class DocumentReadModel {
     this.autoTags = autoTags;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.preview = preview;
     this.option = option;
     this.status = status;
+    this.preview = preview;
+    this.diffCount = diffCount;
   }
 
   @Embeddable

@@ -2,6 +2,8 @@ package com.closememo.query.infra.messaging.handler;
 
 import com.closememo.query.infra.exception.ResourceNotFoundException;
 import com.closememo.query.infra.messaging.payload.Identifier;
+import com.closememo.query.infra.messaging.payload.difference.DifferenceCreatedEvent;
+import com.closememo.query.infra.messaging.payload.difference.DifferenceDeletedEvent;
 import com.closememo.query.infra.messaging.payload.document.AutoTagsUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentCategoryUpdatedEvent;
 import com.closememo.query.infra.messaging.payload.document.DocumentCreatedEvent;
@@ -40,7 +42,8 @@ public class DocumentDomainEventHandler {
         .tags(payload.getTags())
         .createdAt(payload.getCreatedAt())
         .option(payload.getOption())
-        .status(payload.getStatus());
+        .status(payload.getStatus())
+        .diffCount(0);
     setAdditionalProperties(builder, payload.getContent());
 
     repository.save(builder.build());
@@ -107,6 +110,32 @@ public class DocumentDomainEventHandler {
 
     DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
         .autoTags(payload.getAutoTags());
+
+    repository.save(builder.build());
+  }
+
+  @ServiceActivator(inputChannel = "DifferenceCreatedEvent")
+  public void handle(DifferenceCreatedEvent payload) {
+    String documentId = Identifier.convertToString(payload.getDocumentId());
+    DocumentReadModel document = repository.findById(documentId)
+        .orElseThrow(ResourceNotFoundException::new);
+
+    int before = document.getDiffCount();
+    DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
+        .diffCount(before + 1);
+
+    repository.save(builder.build());
+  }
+
+  @ServiceActivator(inputChannel = "DifferenceDeletedEvent")
+  public void handle(DifferenceDeletedEvent payload) {
+    String documentId = Identifier.convertToString(payload.getDocumentId());
+    DocumentReadModel document = repository.findById(documentId)
+        .orElseThrow(ResourceNotFoundException::new);
+
+    int before = document.getDiffCount();
+    DocumentReadModel.DocumentReadModelBuilder builder = document.toBuilder()
+        .diffCount(before - 1);
 
     repository.save(builder.build());
   }

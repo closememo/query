@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class DifferenceCreatedEvent extends DomainEvent {
 
   private Identifier differenceId;
+  private Identifier ownerId;
   private Identifier documentId;
   private long documentVersion;
   private List<LineDelta> lineDeltas;

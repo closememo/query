@@ -1,6 +1,7 @@
 package com.closememo.query.controller.client.dto;
 
 import com.closememo.query.infra.converter.LineDeltaConverter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
@@ -16,12 +17,14 @@ import org.hibernate.annotations.Synchronize;
 @Entity
 @Getter
 @Immutable
-@Subselect("SELECT d.id, d.document_id, d.document_version, d.line_deltas, d.created_at FROM differences d")
+@Subselect("SELECT d.id, d.owner_id, d.document_id, d.document_version, d.line_deltas, d.created_at FROM differences d")
 @Synchronize({"differences"})
 public class DifferenceDTO implements Serializable {
 
   @Id
   private String id;
+  @JsonIgnore
+  private String ownerId;
   private String documentId;
   private long documentVersion;
   @Convert(converter = LineDeltaConverter.class)
@@ -32,17 +35,27 @@ public class DifferenceDTO implements Serializable {
   @Getter
   public static class LineDelta implements Serializable {
 
-    private DeltaType deltaType;
-    private LineChunk source;
-    private LineChunk target;
+    private DeltaType type;
+    private Line source;
+    private Line target;
+    private List<ChangePatch> changePatches;
   }
 
   @Schema(name = "DifferenceDTO_LineChunk")
   @Getter
-  public static class LineChunk implements Serializable {
+  public static class Line implements Serializable {
 
     private int position;
-    private List<String> lines;
+    private String value;
+  }
+
+  @Schema(name = "DifferenceDTO_ChangePatch")
+  @Getter
+  public static class ChangePatch implements Serializable {
+
+    private DeltaType type;
+    private String value;
+    private String changed;
   }
 
   public enum DeltaType {

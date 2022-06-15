@@ -21,10 +21,10 @@ import org.hibernate.annotations.Synchronize;
 @Immutable
 @Subselect(
     "SELECT d.id, d.owner_id, d.category_id, d.title, d.content, d.tags, d.created_at, d.updated_at,"
-        + " d.has_auto_tag, b.id AS bookmark_id"
+        + " d.diff_count, d.has_auto_tag, b.id AS bookmark_id"
         + " FROM documents d LEFT JOIN bookmarks b ON d.id = b.document_id"
         + " WHERE d.status = 'NORMAL'")
-@Synchronize({"documents"})
+@Synchronize({"bookmarks", "documents"})
 public class DocumentDTO implements Serializable {
 
   @Id
@@ -38,6 +38,7 @@ public class DocumentDTO implements Serializable {
   private List<String> tags;
   private ZonedDateTime createdAt;
   private ZonedDateTime updatedAt;
+  private int diffCount;
   @Embedded
   private DocumentOption option;
   @JsonIgnore
