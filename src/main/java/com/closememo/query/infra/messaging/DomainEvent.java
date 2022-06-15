@@ -21,4 +21,8 @@ public class DomainEvent extends Message implements Serializable {
   public MessageType getMessageType() {
     return MessageType.DOMAIN_EVENT;
   }
+
+  public Integer getHash() {
+    return aggregateId.hashCode();
+  }
 }

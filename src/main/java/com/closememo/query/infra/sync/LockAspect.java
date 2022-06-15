@@ -8,7 +8,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * multi-thread 환경에서 동기화 처리를 위해 DomainEvent 의 aggregateId 를 key 로 여기서 Lock 을 걸고 푼다.
+ * multi-thread 환경에서 동기화 처리를 위해 DomainEvent 의 hash 를 key 로 여기서 Lock 을 걸고 푼다.
  */
 @Aspect
 @Order(0) // @Transactional 보다 먼저 시작되어야 한다.
@@ -28,7 +28,7 @@ public class LockAspect {
     Object payload = pjp.getArgs()[0];
     if (payload instanceof DomainEvent) {
       DomainEvent domainEvent = (DomainEvent) payload;
-      Integer hash = domainEvent.getAggregateId().hashCode();
+      Integer hash = domainEvent.getHash();
 
       Object result;
       lockManager.lock(hash);
