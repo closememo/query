@@ -2,13 +2,13 @@ package com.closememo.query.controller.client.dto;
 
 import com.closememo.query.infra.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;

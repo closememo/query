@@ -1,10 +1,10 @@
 package com.closememo.query.controller.client.dao;
 
 import com.closememo.query.controller.client.dto.CategoryDTO;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 

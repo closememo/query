@@ -1,9 +1,9 @@
 package com.closememo.query.controller.system.dao;
 
 import com.closememo.query.controller.system.dto.SystemNoticeDTO;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
 
 @Component

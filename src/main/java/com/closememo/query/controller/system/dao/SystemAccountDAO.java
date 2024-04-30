@@ -2,10 +2,10 @@ package com.closememo.query.controller.system.dao;
 
 import com.closememo.query.controller.system.dto.SystemAccountDTO;
 import com.closememo.query.controller.system.dto.SystemSimpleAccountDTO;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 

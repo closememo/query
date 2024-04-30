@@ -1,6 +1,6 @@
 package com.closememo.query.config.security.authentication.account;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

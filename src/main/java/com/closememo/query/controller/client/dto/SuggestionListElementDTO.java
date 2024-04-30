@@ -1,9 +1,9 @@
 package com.closememo.query.controller.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import java.time.ZonedDateTime;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import lombok.Getter;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Subselect;

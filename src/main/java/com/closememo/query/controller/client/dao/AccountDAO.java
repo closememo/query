@@ -1,8 +1,8 @@
 package com.closememo.query.controller.client.dao;
 
 import com.closememo.query.controller.client.dto.LoggedInAccountDTO;
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Component;
 
 @Component

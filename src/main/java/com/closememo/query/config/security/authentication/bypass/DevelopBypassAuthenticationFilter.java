@@ -5,8 +5,8 @@ import com.closememo.query.config.security.authentication.account.AccountAuthent
 import com.closememo.query.config.security.authentication.account.AccountId;
 import com.closememo.query.config.security.authentication.account.AccountPreAuthentication;
 import com.closememo.query.controller.system.dao.SystemAccountDAO;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
