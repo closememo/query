@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.EventDrivenConsumer;
 import org.springframework.integration.kafka.inbound.KafkaMessageDrivenChannelAdapter;
 import org.springframework.integration.router.HeaderValueRouter;
@@ -70,7 +69,7 @@ public class IntegrationConfig {
         Message<String> kafkaMessage = MessageBuilder
             .withPayload(kafkaObjectMapper.writeValueAsString(payload))
             .setHeader(KafkaHeaders.TOPIC, payload.getClass().getSimpleName())
-            .setHeader(KafkaHeaders.MESSAGE_KEY, payload.getAggregateId())
+            .setHeader(KafkaHeaders.KEY, payload.getAggregateId())
             .build();
         kafkaTemplate.send(kafkaMessage);
       } catch (Exception e) {
@@ -87,7 +86,7 @@ public class IntegrationConfig {
 
   @Bean
   public IntegrationFlow routeKafkaInboundMessage() {
-    return IntegrationFlows.from(inboundKafkaMessageChannel())
+    return IntegrationFlow.from(inboundKafkaMessageChannel())
         .route(router())
         .get();
   }
