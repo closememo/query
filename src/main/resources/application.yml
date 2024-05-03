@@ -5,8 +5,6 @@ spring:
   profiles:
     active: local
     include: actuator, datasource, elasticsearch, kafka, logging, openapi, secret
-  cache:
-    type: redis
 
 server:
   port: 10082

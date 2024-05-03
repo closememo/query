@@ -12,13 +12,11 @@ spring:
     password: devclosememo12#
 
   jpa:
-    database: mysql
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDB103Dialect
-        show-sql: true
-        format-sql: true
-        use-sql-comments: true
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -38,13 +36,11 @@ spring:
     password: ${DEV_DB_PASSWORD}
 
   jpa:
-    database: mysql
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MariaDB103Dialect
-        show-sql: true
-        format-sql: true
-        use-sql-comments: true
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -64,10 +60,6 @@ spring:
     password: ${DB_PASSWORD}
 
   jpa:
-    database: mysql
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MariaDB103Dialect
     open-in-view: false
     hibernate:
       ddl-auto: none
